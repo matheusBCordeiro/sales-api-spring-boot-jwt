@@ -13,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
@@ -37,14 +38,14 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public Integer save(@RequestBody OrderDTO dto){
+    public Integer save(@RequestBody @Valid OrderDTO dto){
         Order order = orderService.save(dto);
         return order.getId();
     }
 
     @PatchMapping("{id}")
     @ResponseStatus(NO_CONTENT)
-    public void updateStatus(@PathVariable Integer id ,
+    public void updateStatus(@PathVariable @Valid Integer id ,
                              @RequestBody OrderStatusUpdatesDTO dto){
         String newStatus = dto.getNewStatus();
         orderService.statusUpdates(id, OrderStatus.valueOf(newStatus));
