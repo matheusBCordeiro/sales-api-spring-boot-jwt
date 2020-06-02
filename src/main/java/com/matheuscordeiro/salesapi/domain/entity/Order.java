@@ -1,5 +1,6 @@
 package com.matheuscordeiro.salesapi.domain.entity;
 
+import com.matheuscordeiro.salesapi.domain.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,10 @@ public class Order {
 
     @Column(name = "total", precision = 20, scale = 2)
     private BigDecimal total;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private OrderStatus orderStatus;
 
     @OneToMany(mappedBy = "order")
     private List<OrderItem> itens;

@@ -2,9 +2,11 @@ package com.matheuscordeiro.salesapi.service.impl;
 
 import com.matheuscordeiro.salesapi.api.dto.OrderDTO;
 import com.matheuscordeiro.salesapi.api.dto.OrderItemDTO;
+import com.matheuscordeiro.salesapi.domain.OrderStatus;
 import com.matheuscordeiro.salesapi.domain.entity.*;
 import com.matheuscordeiro.salesapi.domain.repository.*;
 import com.matheuscordeiro.salesapi.exception.BusinessException;
+import com.matheuscordeiro.salesapi.exception.OrderNotFoundException;
 import com.matheuscordeiro.salesapi.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,6 +43,21 @@ public class OrderServiceImpl implements OrderService {
         orderItemRepository.saveAll(orderItems);
         order.setItens(orderItems);
         return order;
+    }
+
+    @Override
+    public Optional<Order> getFullOrder(Integer id) {
+        return orderRepository.findByIdFetchItems(id);
+    }
+
+    @Override
+    public void statusUpdates(Integer id, OrderStatus orderStatus) {
+        orderRepository
+                .findById(id)
+                .map( order -> {
+                    order.setOrderStatus(orderStatus);
+                    return orderRepository.save(order);
+                }).orElseThrow(() -> new OrderNotFoundException() );
     }
 
     private List<OrderItem> convertItems(Order order, List<OrderItemDTO> items){
